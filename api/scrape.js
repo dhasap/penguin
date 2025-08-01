@@ -1,10 +1,12 @@
-// File: api/scrape.js - VERSI FINAL BOSS
+// File: api/scrape.js - VERSI PAMUNGKAS (ALL-IN-ONE)
 
-// [MODIFIKASI] Import 'chromium-min'
-const chromium = require('@sparticuz/chromium-min');
+const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 
 export default async function handler(request, response) {
+    // Kita tidak perlu lagi mengatur AWS_LAMBDA_FUNCTION_MEMORY_SIZE secara manual di sini
+    // karena vercel.json sudah menanganinya.
+    
     const { url: targetUrl } = request.query;
 
     if (!targetUrl) {
@@ -14,12 +16,6 @@ export default async function handler(request, response) {
     let browser = null;
 
     try {
-        // [MODIFIKASI] Menambahkan path untuk library sistem yang hilang
-        // Ini akan secara otomatis membuat path ke file-file seperti libnss3.so
-        process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE = '1024';
-        await chromium.font('https://raw.githack.com/googlei18n/noto-cjk/main/NotoSansCJK-Regular.ttc');
-
-
         browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
@@ -51,7 +47,7 @@ export default async function handler(request, response) {
         }
 
         response.setHeader('Access-Control-Allow-Origin', '*');
-        response.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+        response.setHeader('Cache-Control', 's-maxage=86400'); // Cache hasil selama 1 hari
         return response.status(200).json(scrapedData);
 
     } catch (error) {
