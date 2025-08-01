@@ -1,6 +1,7 @@
-// File: api/scrape.js - VERSI FINAL (FIXED executablePath)
+// File: api/scrape.js - VERSI FINAL BOSS
 
-const chromium = require('@sparticuz/chromium');
+// [MODIFIKASI] Import 'chromium-min'
+const chromium = require('@sparticuz/chromium-min');
 const puppeteer = require('puppeteer-core');
 
 export default async function handler(request, response) {
@@ -13,11 +14,16 @@ export default async function handler(request, response) {
     let browser = null;
 
     try {
+        // [MODIFIKASI] Menambahkan path untuk library sistem yang hilang
+        // Ini akan secara otomatis membuat path ke file-file seperti libnss3.so
+        process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE = '1024';
+        await chromium.font('https://raw.githack.com/googlei18n/noto-cjk/main/NotoSansCJK-Regular.ttc');
+
+
         browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            // [PERBAIKAN] Menambahkan tanda kurung () untuk memanggil fungsi
-            executablePath: await chromium.executablePath(), 
+            executablePath: await chromium.executablePath(),
             headless: chromium.headless,
             ignoreHTTPSErrors: true,
         });
